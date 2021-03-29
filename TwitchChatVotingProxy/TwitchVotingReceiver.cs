@@ -1,7 +1,9 @@
 ﻿using Serilog;
 using System;
 using System.Threading.Tasks;
+using TwitchChatVotingProxy.SubReceiver;
 using TwitchLib.Client;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
@@ -12,11 +14,12 @@ namespace TwitchChatVotingProxy.VotingReceiver
     /// <summary>
     /// Twitch voting receiver implementation
     /// </summary>
-    class TwitchVotingReceiver : IVotingReceiver
+    class TwitchVotingReceiver : IVotingReceiver, ISubReceiver
     {
         public static readonly int RECONNECT_INTERVAL = 1000;
 
         public event EventHandler<OnMessageArgs> OnMessage;
+        public event EventHandler<OnSubArgs> OnSubscription;
 
         private TwitchClient client;
         private TwitchVotingReceiverConfig config;
@@ -36,7 +39,11 @@ namespace TwitchChatVotingProxy.VotingReceiver
                 new ConnectionCredentials(config.UserName, config.OAuth),
                 config.ChannelName
             );
-
+            client.OnReSubscriber += OnReSubscribed;
+            client.OnNewSubscriber += OnNewSubscribed;
+            client.OnGiftedSubscription += OnGiftedSubscription;
+            client.OnContinuedGiftedSubscription += OnContinuedGiftedSubscription;
+            client.OnCommunitySubscription += OnCommunitySubscribed;
             client.OnConnected += OnConnected;
             client.OnError += OnError;
             client.OnIncorrectLogin += OnIncorrectLogin;
@@ -106,6 +113,50 @@ namespace TwitchChatVotingProxy.VotingReceiver
             evnt.Message = chatMessage.Message.Trim();
             evnt.ClientId = chatMessage.UserId;
             OnMessage.Invoke(this, evnt);
+        }
+        private void OnReSubscribed(object sender, OnReSubscriberArgs e)
+        {
+            HandleSubscribe(e.ReSubscriber);
+        }
+
+        private void OnNewSubscribed(object sender, OnNewSubscriberArgs e)
+        {
+            HandleSubscribe(e.Subscriber);
+        }
+
+        private void OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
+        {
+            HandleSubscribe(e.GiftedSubscription.MsgParamRecipientId, e.GiftedSubscription.DisplayName, e.GiftedSubscription.MsgParamSubPlan);
+        }
+
+        private void OnContinuedGiftedSubscription(object sender, OnContinuedGiftedSubscriptionArgs e)
+        {
+            HandleSubscribe(e.ContinuedGiftedSubscription.UserId, e.ContinuedGiftedSubscription.DisplayName, SubscriptionPlan.NotSet); // TODO: Find correct subscription level
+        }
+
+        private void OnCommunitySubscribed(object sender, OnCommunitySubscriptionArgs e)
+        {
+            HandleSubscribe(e.GiftedSubscription.UserId, e.GiftedSubscription.DisplayName, e.GiftedSubscription.MsgParamSubPlan);
+        }
+
+        private void HandleSubscribe(SubscriberBase subscriber)
+        {
+            HandleSubscribe(subscriber.UserId, subscriber.DisplayName, subscriber.SubscriptionPlan);
+        }
+
+        private void HandleSubscribe(string userId, string userName, SubscriptionPlan plan)
+        {
+            var evnt = new OnSubArgs();
+            evnt.Tier = Enum.GetName(typeof(SubscriptionPlan), plan);
+            evnt.ClientId = userId;
+            evnt.ClientName = userName;
+            OnSubscription.Invoke(this, evnt);
+            OnSubscription.Invoke(this, evnt);
+        }
+
+        void ISubReceiver.SendMessage(string message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

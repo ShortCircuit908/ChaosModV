@@ -5,6 +5,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using TwitchChatVotingProxy.SubReceiver;
 
 namespace TwitchChatVotingProxy.ChaosPipe
 {
@@ -187,6 +188,13 @@ namespace TwitchChatVotingProxy.ChaosPipe
         private void SendHeartBeat()
         {
             SendMessageToPipe("ping");
+        }
+        public void SendSubscription(OnSubArgs sub)
+        {
+            logger.Debug("sending subscription event");
+            var message = $"{sub.ClientId};{sub.ClientName};{sub.Tier}";
+            SendMessageToPipe($"subscription:{message}");
+            logger.Debug($"subscription sent to pipe: {message}");
         }
     }
 }

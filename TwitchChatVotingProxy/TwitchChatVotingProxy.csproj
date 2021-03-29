@@ -259,6 +259,9 @@
     <Compile Include="OverlayServer\OverlayMessage.cs" />
     <Compile Include="OverlayServer\OverlayServer.cs" />
     <Compile Include="OverlayServer\IOverlayServer.cs" />
+    <Compile Include="SubReceiver\ISubReceiver.cs" />
+    <Compile Include="SubReceiver\OnSubArgs.cs" />
+    <Compile Include="TwitchSubReceiver.cs" />
     <Compile Include="TwitchVotingReceiverConfig.cs" />
     <Compile Include="VoteOption.cs" />
     <Compile Include="IVoteOption.cs" />
