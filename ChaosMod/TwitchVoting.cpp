@@ -402,6 +402,10 @@ bool TwitchVoting::HandleMsg(const std::string& msg)
 			splitIndex = valuesStr.find(":");
 		}
 	}
+	else if (msg._Starts_with("subscription")) {
+		//g_effectDispatcher->DispatchEffect(EffectType::EFFECT_PLAYER_KILLS_NEAREST_PED);
+		g_effectDispatcher->DispatchRandomEffect();
+	}
 
 	return true;
 }

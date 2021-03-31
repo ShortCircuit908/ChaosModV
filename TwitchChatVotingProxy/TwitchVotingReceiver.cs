@@ -153,10 +153,5 @@ namespace TwitchChatVotingProxy.VotingReceiver
             OnSubscription.Invoke(this, evnt);
             OnSubscription.Invoke(this, evnt);
         }
-
-        void ISubReceiver.SendMessage(string message)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
