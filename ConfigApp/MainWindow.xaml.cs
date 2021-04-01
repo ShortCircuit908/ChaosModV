@@ -21,9 +21,13 @@ namespace ConfigApp
         private OptionsFile m_configFile = new OptionsFile("config.ini");
         private OptionsFile m_twitchFile = new OptionsFile("twitch.ini");
         private OptionsFile m_effectsFile = new OptionsFile("effects.ini");
+        private OptionsFile m_bitsFile = new OptionsFile("bits.ini");
+        private OptionsFile m_bitsEventsFile = new OptionsFile("bits_events.ini");
 
         private Dictionary<EffectType, TreeMenuItem> m_treeMenuItemsMap;
         private Dictionary<EffectType, EffectData> m_effectDataMap;
+        private Dictionary<EffectType, BitsMenuItem> m_bitsMenuItemsMap;
+        private Dictionary<EffectType, int> m_bitsMap;
 
         public MainWindow()
         {
@@ -56,6 +60,11 @@ namespace ConfigApp
             InitEffectsTreeView();
 
             ParseEffectsFile();
+
+            InitBitEventsView();
+            
+            ParseBitsFile();
+            ParseBitsEventsFile();
 
             InitTwitchTab();
 
@@ -117,6 +126,19 @@ namespace ConfigApp
             return effectData;
         }
 
+        private int GetEventBits(EffectType effectType)
+        {
+            // Create EffectData in case effect wasn't saved yet
+            if (!m_bitsMap.TryGetValue(effectType, out int bits))
+            {
+                bits = 0;
+
+                m_bitsMap.Add(effectType, bits);
+            }
+
+            return bits;
+        }
+
         private void ParseConfigFile()
         {
             m_configFile.ReadFile();
@@ -151,6 +173,15 @@ namespace ConfigApp
             meta_effects_short_timed_dur.Text = m_configFile.ReadValue("MetaShortEffectDur", "65");
         }
 
+        private void ParseBitsFile()
+        {
+            m_bitsFile.ReadFile();
+
+            bits_cumulative.IsChecked = m_bitsFile.ReadValueBool("EnableCumulativeBits", false);
+            bits_random_event_enabled.IsChecked = m_bitsFile.ReadValueBool("EnableBitEvents", false);
+            bits_random_event_trigger_quantity.Text = m_configFile.ReadValue("RandomEventTriggerAmount", "500");
+        }
+
         private void WriteConfigFile()
         {
             m_configFile.WriteValue("NewEffectSpawnTime", misc_user_effects_spawn_dur.Text);
@@ -173,6 +204,15 @@ namespace ConfigApp
             m_configFile.WriteValue("MetaShortEffectDur", meta_effects_short_timed_dur.Text);
             
             m_configFile.WriteFile();
+        }
+
+        private void WriteBitsFile()
+        {
+            m_bitsFile.WriteValue("EnableCumulativeBits", bits_cumulative.IsChecked.Value);
+            m_bitsFile.WriteValue("EnableBitsEvents", bits_random_event_enabled.IsChecked.Value);
+            m_bitsFile.WriteValue("RandomEventTriggerAmount", "500");
+
+            m_bitsFile.WriteFile();
         }
 
         private void ParseTwitchFile()
@@ -203,6 +243,36 @@ namespace ConfigApp
             m_twitchFile.WriteValue("TwitchRandomEffectVoteableEnable", twitch_user_random_voteable_enable.IsChecked.Value);
 
             m_twitchFile.WriteFile();
+        }
+
+        private void ParseBitsEventsFile()
+        {
+            m_bitsEventsFile.ReadFile();
+
+            foreach (string key in m_bitsEventsFile.GetKeys())
+            {
+                string value = m_bitsEventsFile.ReadValue(key);
+
+
+                // Find EffectType from ID
+                EffectType effectType = EffectType._EFFECT_ENUM_MAX;
+                foreach (KeyValuePair<EffectType, EffectInfo> pair in EffectsMap)
+                {
+                    if (pair.Value.Id == key)
+                    {
+                        effectType = pair.Key;
+                        break;
+                    }
+                }
+
+                if (effectType != EffectType._EFFECT_ENUM_MAX)
+                {
+                    int.TryParse(value, out int bits);
+                    m_bitsMenuItemsMap[effectType].Bits = bits;
+
+                    m_bitsMap.Add(effectType, bits);
+                }
+            }
         }
 
         private void ParseEffectsFile()
@@ -287,6 +357,83 @@ namespace ConfigApp
             }
 
             m_effectsFile.WriteFile();
+        }
+
+        private void WriteBitsEventsFile()
+        {
+            for (EffectType effectType = 0; effectType < EffectType._EFFECT_ENUM_MAX; effectType++)
+            {
+                int bits = GetEventBits(effectType);
+
+                m_bitsEventsFile.WriteValue(EffectsMap[effectType].Id, bits);
+            }
+
+            m_bitsEventsFile.WriteFile();
+        }
+
+        private void InitBitEventsView()
+        {
+            m_bitsMenuItemsMap = new Dictionary<EffectType, BitsMenuItem>();
+            m_bitsMap = new Dictionary<EffectType, int>();
+
+            BitsMenuItem playerParentItem = new BitsMenuItem("Player");
+            BitsMenuItem vehicleParentItem = new BitsMenuItem("Vehicle");
+            BitsMenuItem pedsParentItem = new BitsMenuItem("Peds");
+            BitsMenuItem timeParentItem = new BitsMenuItem("Time");
+            BitsMenuItem weatherParentItem = new BitsMenuItem("Weather");
+            BitsMenuItem miscParentItem = new BitsMenuItem("Misc");
+            BitsMenuItem metaParentItem = new BitsMenuItem("Meta");
+
+            SortedDictionary<string, Tuple<EffectType, EffectCategory>> sortedEffects = new SortedDictionary<string, Tuple<EffectType, EffectCategory>>();
+
+            for (EffectType effectType = 0; effectType < EffectType._EFFECT_ENUM_MAX; effectType++)
+            {
+                EffectInfo effectInfo = EffectsMap[effectType];
+
+                sortedEffects.Add(effectInfo.Name, new Tuple<EffectType, EffectCategory>(effectType, effectInfo.EffectCategory));
+            }
+
+            foreach (var effect in sortedEffects)
+            {
+                Tuple<EffectType, EffectCategory> effectTuple = effect.Value;
+
+                BitsMenuItem menuItem = new BitsMenuItem(effect.Key);
+                m_bitsMenuItemsMap.Add(effectTuple.Item1, menuItem);
+
+                switch (effectTuple.Item2)
+                {
+                    case EffectCategory.PLAYER:
+                        playerParentItem.AddChild(menuItem);
+                        break;
+                    case EffectCategory.VEHICLE:
+                        vehicleParentItem.AddChild(menuItem);
+                        break;
+                    case EffectCategory.PEDS:
+                        pedsParentItem.AddChild(menuItem);
+                        break;
+                    case EffectCategory.TIME:
+                        timeParentItem.AddChild(menuItem);
+                        break;
+                    case EffectCategory.WEATHER:
+                        weatherParentItem.AddChild(menuItem);
+                        break;
+                    case EffectCategory.MISC:
+                        miscParentItem.AddChild(menuItem);
+                        break;
+                    case EffectCategory.META:
+                        metaParentItem.AddChild(menuItem);
+                        break;
+                }
+            }
+
+            bit_events_tree_view.Items.Clear();
+            bit_events_tree_view.Items.Add(playerParentItem);
+            bit_events_tree_view.Items.Add(vehicleParentItem);
+            bit_events_tree_view.Items.Add(pedsParentItem);
+            bit_events_tree_view.Items.Add(timeParentItem);
+            bit_events_tree_view.Items.Add(weatherParentItem);
+            bit_events_tree_view.Items.Add(miscParentItem);
+            bit_events_tree_view.Items.Add(metaParentItem);
         }
 
         private void InitEffectsTreeView()
@@ -404,10 +551,13 @@ namespace ConfigApp
             WriteConfigFile();
             WriteTwitchFile();
             WriteEffectsFile();
+            WriteBitsFile();
+            WriteBitsEventsFile();
 
             // Reload saved config to show the "new" (saved) settings
             ParseConfigFile();
             ParseTwitchFile();
+            ParseBitsFile();
 
             MessageBox.Show("Saved config!\nMake sure to press CTRL + L in-game twice if mod is already running to reload the config.", "ChaosModV", MessageBoxButton.OK, MessageBoxImage.Information);
         }

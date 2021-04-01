@@ -500,3 +500,47 @@ void EffectDispatcher::ResetTimer()
 	m_timerTimerRuns = 0;
 	m_effectsTimer = GetTickCount64();
 }
+
+void EffectDispatcher::AddBits(int bits) {
+	if (!g_optionsManager.GetBitsValue("EnableBitsEvents", 0))
+	{
+		return;
+	}
+
+	bool cumulative = g_optionsManager.GetBitsValue("EnableCumulativeBits", 0);
+
+	if (cumulative) {
+		m_cumulativeBits += bits;
+		bits = m_cumulativeBits;
+	}
+
+	int random_trigger_amnt = g_optionsManager.GetBitsValue("RandomEventTriggerAmount", 0);
+
+	if (random_trigger_amnt > 0 && bits >= random_trigger_amnt)
+	{
+		m_cumulativeBits = 0;
+		DispatchRandomEffect();
+	}
+	
+	EffectType max_applicable;
+	int max_applicable_bits = 0;
+	for (std::unordered_map<EffectType, EffectInfo>::iterator it = g_effectsMap.begin(); it != g_effectsMap.end(); ++it)
+	{
+		int required_bits = g_optionsManager.GetBitEventsValue(it->second.Id, 0);
+		if (required_bits <= 0)
+		{
+			continue;
+		}
+		if (required_bits > max_applicable_bits && required_bits <= bits)
+		{
+			max_applicable_bits = required_bits;
+			max_applicable = it->first;
+		}
+	}
+
+	if (max_applicable && max_applicable_bits)
+	{
+		DispatchEffect(max_applicable);
+		m_cumulativeBits = 0;
+	}
+}

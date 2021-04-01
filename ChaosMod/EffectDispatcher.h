@@ -23,6 +23,7 @@ public:
 	~EffectDispatcher();
 
 public:
+	void AddBits(int bits);
 	void DrawTimerBar();
 	void DrawEffectTexts();
 	void UpdateTimer();
@@ -53,6 +54,8 @@ private:
 	int m_metaEffectSpawnTime;
 	int m_metaEffectTimedDur;
 	int m_metaEffectShortDur;
+
+	int m_cumulativeBits;
 
 	const std::array<int, 3> m_timerColor;
 	const std::array<int, 3> m_textColor;

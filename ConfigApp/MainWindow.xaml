@@ -188,7 +188,69 @@
                                   HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
                     </Grid>
                 </TabItem>
-            
+
+                <TabItem Header="Bits" Background="#FFF0F0F0" BorderBrush="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="400"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40" />
+                                <RowDefinition Height="40" />
+                                <RowDefinition Height="40" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Bits trigger random events" Grid.Row="0" Grid.Column="0"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            <CheckBox x:Name="bits_random_event_enabled" Grid.Row="0" Grid.Column="2"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <Label Content="How many bits to trigger random events?" Grid.Row="1" Grid.Column="0"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            <TextBox x:Name="bits_random_event_trigger_quantity" Height="20" Width="60" Grid.Row="1" Grid.Column="2"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"
+                                MaxLength="6" PreviewTextInput="OnlyNumbersPreviewTextInput"
+                                CommandManager.PreviewExecuted="NoCopyPastePreviewExecuted" ContextMenu="{x:Null}"
+                                Keyboard.PreviewKeyDown="NoSpacePreviewKeyDown" />
+                            <Label Content="Bits are cumulative" Grid.Row="2" Grid.Column="0"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            <CheckBox x:Name="bits_cumulative" Grid.Row="2" Grid.Column="2"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Bit values to trigger specific events (0 = disabled)"/>
+                                <TreeView x:Name="bit_events_tree_view" BorderBrush="White" Background="{x:Null}">
+                                    <TreeView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Setter Property="IsExpanded" Value="False" />
+                                        </Style>
+                                    </TreeView.ItemContainerStyle>
+                                    <TreeView.Resources>
+                                        <HierarchicalDataTemplate DataType="{x:Type local:BitsMenuItem}" ItemsSource="{Binding Children}">
+                                            <StackPanel Orientation="Horizontal" Height="20">
+                                                <TextBox Visibility="{Binding IsBranch}" Text="{Binding Bits}"
+                                                     VerticalAlignment="Center" MaxLength="6"
+                                                     PreviewTextInput="OnlyNumbersPreviewTextInput"
+                                                     CommandManager.PreviewExecuted="NoCopyPastePreviewExecuted" ContextMenu="{x:Null}"
+                                                      Keyboard.PreviewKeyDown="NoSpacePreviewKeyDown"/>
+                                                <TextBlock Text="{Binding Text}" Margin="5,0" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </HierarchicalDataTemplate>
+                                    </TreeView.Resources>
+                                </TreeView>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
                 <TabItem x:Name="twitch_tab" Header="Twitch" Background="#FFF0F0F0" BorderBrush="LightGray">
                     <Grid>
                         <Grid.RowDefinitions>

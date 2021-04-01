@@ -406,7 +406,11 @@ bool TwitchVoting::HandleMsg(const std::string& msg)
 		//g_effectDispatcher->DispatchEffect(EffectType::EFFECT_PLAYER_KILLS_NEAREST_PED);
 		g_effectDispatcher->DispatchRandomEffect();
 	}
-
+	else if (msg._Starts_with("bits")) {
+		std::string valuesStr = msg.substr(msg.find(":") + 1);
+		int bits = std::stoi(valuesStr);
+		g_effectDispatcher->AddBits(bits);
+	}
 	return true;
 }
 

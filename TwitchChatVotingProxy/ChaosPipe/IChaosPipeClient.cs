@@ -1,4 +1,6 @@
 ﻿using System;
+using TwitchChatVotingProxy.BitsReceiver;
+using TwitchChatVotingProxy.SubReceiver;
 
 namespace TwitchChatVotingProxy.ChaosPipe
 {
@@ -17,5 +19,9 @@ namespace TwitchChatVotingProxy.ChaosPipe
         /// Event that gets invoked when the chaos mod starts a no voting round
         /// </summary>
         event EventHandler OnNoVotingRound;
+
+        void SendSubscription(OnSubArgs e);
+
+        void SendBits(OnBitsArgs e);
     }
 }

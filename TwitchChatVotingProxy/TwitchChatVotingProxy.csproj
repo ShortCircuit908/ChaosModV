@@ -244,6 +244,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitsReceiver\IBitsReceiver.cs" />
+    <Compile Include="BitsReceiver\OnBitsArgs.cs" />
     <Compile Include="ChaosModController.cs" />
     <Compile Include="ChaosPipe\ChaosPipeClient.cs" />
     <Compile Include="ChaosPipe\IChaosPipeClient.cs" />

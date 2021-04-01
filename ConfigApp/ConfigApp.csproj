@@ -233,6 +233,7 @@
       <DependentUpon>EffectConfig.xaml</DependentUpon>
     </Compile>
     <Compile Include="EffectData.cs" />
+    <Compile Include="BitsTreeMenuItem.cs" />
     <Compile Include="EffectsTreeMenuItem.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="Utils.cs" />
