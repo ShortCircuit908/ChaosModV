@@ -24,6 +24,7 @@ public:
 
 public:
 	void AddBits(int bits);
+	float FakeTimerBarPercentage = 0.f;
 	void DrawTimerBar();
 	void DrawEffectTexts();
 	void UpdateTimer();
@@ -40,7 +41,7 @@ public:
 	void UpdateMetaEffects();
 	void DispatchEffect(const EffectIdentifier& effectIdentifier, const char* suffix = nullptr);
 	void DispatchRandomEffect(const char* suffix = nullptr);
-	void ClearEffects();
+	void ClearEffects(bool includePermanent = true);
 	void ClearActiveEffects(EffectIdentifier exclude = EffectIdentifier());
 	void ClearMostRecentEffect();
 	void Reset();
