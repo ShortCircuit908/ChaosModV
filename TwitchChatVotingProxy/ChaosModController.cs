@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using TwitchChatVotingProxy.BitsReceiver;
 using TwitchChatVotingProxy.ChaosPipe;
 using TwitchChatVotingProxy.Config;
 using TwitchChatVotingProxy.OverlayServer;
@@ -29,18 +30,21 @@ namespace TwitchChatVotingProxy
         private EOverlayMode? overlayMode;
         private IVotingReceiver votingReceiver;
         private ISubReceiver subReceiver;
+        private IBitsReceiver bitsReceiver;
 
         public ChaosModController(
             IChaosPipeClient chaosPipe,
             IOverlayServer overlayServer,
             IVotingReceiver votingReceiver,
             ISubReceiver subReceiver,
+            IBitsReceiver bitsReceiver,
             IConfig config
         ) {
             this.chaosPipe = chaosPipe;
             this.overlayServer = overlayServer;
             this.votingReceiver = votingReceiver;
             this.subReceiver = subReceiver;
+            this.bitsReceiver = bitsReceiver;
 
             // Setup pipe listeners
             this.chaosPipe.OnGetCurrentVotes += OnGetCurrentVotes;
@@ -51,6 +55,7 @@ namespace TwitchChatVotingProxy
             // Setup receiver listeners
             this.votingReceiver.OnMessage += OnVoteReceiverMessage;
             this.subReceiver.OnSubscription += OnSubscription;
+            this.bitsReceiver.OnBits += OnBits;
 
             // Setup config options
             votingMode = config.VotingMode;
@@ -260,6 +265,11 @@ namespace TwitchChatVotingProxy
         private void OnSubscription(object sender, OnSubArgs e)
         {
             chaosPipe.SendSubscription(e);
+        }
+
+        private void OnBits(object sender, OnBitsArgs e)
+        {
+            chaosPipe.SendBits(e);
         }
     }
 }

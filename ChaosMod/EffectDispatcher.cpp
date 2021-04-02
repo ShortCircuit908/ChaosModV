@@ -15,6 +15,17 @@ EffectDispatcher::EffectDispatcher(const std::array<int, 3>& timerColor, const s
 
 	m_twitchOverlayMode = static_cast<TwitchOverlayMode>(g_optionsManager.GetTwitchValue<int>("TwitchVotingOverlayMode", OPTION_DEFAULT_TWITCH_OVERLAY_MODE));
 
+	m_bitsCumulative = g_optionsManager.GetBitsValue<bool>("EnableCumulativeBits", OPTION_DEFAULT_BITS_CUMULATIVE);
+	m_bitEventsEnabled = g_optionsManager.GetBitsValue<bool>("EnableBitsEvents", OPTION_DEFAULT_BIT_EVENTS_ENABLED);
+	m_bitRandomEventAmount = g_optionsManager.GetBitsValue<int>("RandomEventTriggerAmount", OPTION_DEFAULT_BIT_RANDOM_EVENT_AMOUNT);
+	
+	for (const auto& pair : g_enabledEffects)
+	{
+		const auto& [effectIdentifier, effectData] = pair;
+		int requiredBits = g_optionsManager.GetBitEventsValue(effectData.Id, 0);
+		m_bitEventAmounts.emplace(effectIdentifier, requiredBits);
+	}
+
 	Reset();
 }
 
@@ -507,45 +518,44 @@ void EffectDispatcher::ResetTimer()
 }
 
 void EffectDispatcher::AddBits(int bits) {
-	if (!g_optionsManager.GetBitsValue("EnableBitsEvents", 0))
+	if (!m_bitEventsEnabled ||  bits <= 0)
 	{
 		return;
 	}
 
-	bool cumulative = g_optionsManager.GetBitsValue("EnableCumulativeBits", 0);
+	// Find and dispatch an explicitly defined effect first
+	bool dispatchedSpecificEffect = false;
 
-	if (cumulative) {
+	/*
+	for (std::unordered_map<EffectIdentifier, int>::iterator it = m_bitEventAmounts.begin(); it != m_bitEventAmounts.end(); ++it)
+	{
+		int requiredBits = it->second;
+		if (bits == requiredBits)
+		{
+			DispatchEffect(it->first);
+			dispatchedSpecificEffect = true;
+		}
+	}*/
+
+	if (dispatchedSpecificEffect)
+	{
+		return;
+	}
+
+	// If no specific effect was triggered, attempt to trigger a random effect with bits
+
+	if (m_bitsCumulative) {
 		m_cumulativeBits += bits;
 		bits = m_cumulativeBits;
 	}
 
-	int random_trigger_amnt = g_optionsManager.GetBitsValue("RandomEventTriggerAmount", 0);
-
-	if (random_trigger_amnt > 0 && bits >= random_trigger_amnt)
+	// Apply an effect until there are not enough bits
+	while (bits >= m_bitRandomEventAmount)
 	{
-		m_cumulativeBits = 0;
 		DispatchRandomEffect();
-	}
-	
-	EffectType max_applicable;
-	int max_applicable_bits = 0;
-	for (std::unordered_map<EffectType, EffectInfo>::iterator it = g_effectsMap.begin(); it != g_effectsMap.end(); ++it)
-	{
-		int required_bits = g_optionsManager.GetBitEventsValue(it->second.Id, 0);
-		if (required_bits <= 0)
-		{
-			continue;
+		bits -= m_bitRandomEventAmount;
+		if (m_bitsCumulative) {
+			m_cumulativeBits -= m_bitRandomEventAmount;
 		}
-		if (required_bits > max_applicable_bits && required_bits <= bits)
-		{
-			max_applicable_bits = required_bits;
-			max_applicable = it->first;
-		}
-	}
-
-	if (max_applicable && max_applicable_bits)
-	{
-		DispatchEffect(max_applicable);
-		m_cumulativeBits = 0;
 	}
 }

@@ -14,6 +14,8 @@
 
 #include "Effects/MetaEffectInfo.h"
 
+#include "Effects/BitCacheHash.h"
+
 enum class TwitchOverlayMode;
 
 class EffectDispatcher
@@ -57,6 +59,12 @@ private:
 	int m_metaEffectShortDur;
 
 	int m_cumulativeBits;
+
+	bool m_bitEventsEnabled;
+	bool m_bitsCumulative;
+	int m_bitRandomEventAmount;
+
+	std::unordered_map<EffectIdentifier, int, EffectsIdentifierHasher> m_bitEventAmounts;
 
 	const std::array<int, 3> m_timerColor;
 	const std::array<int, 3> m_textColor;

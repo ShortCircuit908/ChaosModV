@@ -17,16 +17,16 @@ namespace TwitchChatVotingProxy.VotingReceiver
     /// <summary>
     /// Twitch voting receiver implementation
     /// </summary>
-    class TwitchVotingReceiver : IVotingReceiver, ISubReceiver
+    class TwitchVotingReceiver : IVotingReceiver, ISubReceiver, IBitsReceiver
     {
         public static readonly int RECONNECT_INTERVAL = 1000;
 
         public event EventHandler<OnMessageArgs> OnMessage;
         public event EventHandler<OnSubArgs> OnSubscription;
-        //public event EventHandler<OnBitsArgs> OnBits;
+        public event EventHandler<OnBitsArgs> OnBits;
 
         private TwitchClient client;
-        //private TwitchPubSub clientPubSub;
+        private TwitchPubSub clientPubSub;
         private TwitchVotingReceiverConfig config;
         private ILogger logger = Log.Logger.ForContext<TwitchVotingReceiver>();
 
@@ -34,7 +34,7 @@ namespace TwitchChatVotingProxy.VotingReceiver
         {
             this.config = config;
 
-            //clientPubSub.Connect();
+            clientPubSub.Connect();
 
             // Connect to twitch
             logger.Information(
@@ -59,8 +59,8 @@ namespace TwitchChatVotingProxy.VotingReceiver
 
             client.Connect();
 
-            //clientPubSub.OnPubSubServiceConnected += onPubSubServiceConnected;
-            //clientPubSub.OnBitsReceived += onBitsReceived;
+            clientPubSub.OnPubSubServiceConnected += onPubSubServiceConnected;
+            clientPubSub.OnBitsReceived += onBitsReceived;
         }
 
         public void SendMessage(string message)
@@ -111,8 +111,8 @@ namespace TwitchChatVotingProxy.VotingReceiver
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             logger.Information($"successfully joined twitch channel \"{config.ChannelName}\"");
-            //clientPubSub.ListenToBitsEvents(e.Channel);
-            //logger.Information($"listening for bits in twitch channel \"{config.ChannelName}\"");
+            clientPubSub.ListenToBitsEvents(e.Channel);
+            logger.Information($"listening for bits in twitch channel \"{config.ChannelName}\"");
         }
         /// <summary>
         /// Called when the twitch client receives a message
@@ -164,7 +164,7 @@ namespace TwitchChatVotingProxy.VotingReceiver
             evnt.ClientName = userName;
             OnSubscription.Invoke(this, evnt);
         }
-        /*
+
         private void onPubSubServiceConnected(object sender, EventArgs args)
         {
             logger.Information("successfully connected to PubSub service");
@@ -176,6 +176,5 @@ namespace TwitchChatVotingProxy.VotingReceiver
             evnt.Bits = args.BitsUsed;
             OnBits.Invoke(this, evnt);
         }
-        */
     }
 }

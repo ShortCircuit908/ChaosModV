@@ -5,7 +5,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-//using TwitchChatVotingProxy.BitsReceiver;
+using TwitchChatVotingProxy.BitsReceiver;
 using TwitchChatVotingProxy.SubReceiver;
 
 namespace TwitchChatVotingProxy.ChaosPipe
@@ -197,7 +197,6 @@ namespace TwitchChatVotingProxy.ChaosPipe
             SendMessageToPipe($"subscription:{message}");
             logger.Debug($"subscription sent to pipe: {message}");
         }
-        /*
         public void SendBits(OnBitsArgs bits)
         {
             logger.Debug("sending bits event");
@@ -205,6 +204,5 @@ namespace TwitchChatVotingProxy.ChaosPipe
             SendMessageToPipe($"bits:{message}");
             logger.Debug($"bits sent to pipe: {message}");
         }
-        */
     }
 }

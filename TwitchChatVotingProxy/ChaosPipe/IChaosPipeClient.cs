@@ -1,5 +1,5 @@
 ﻿using System;
-//using TwitchChatVotingProxy.BitsReceiver;
+using TwitchChatVotingProxy.BitsReceiver;
 using TwitchChatVotingProxy.SubReceiver;
 
 namespace TwitchChatVotingProxy.ChaosPipe
@@ -22,6 +22,6 @@ namespace TwitchChatVotingProxy.ChaosPipe
 
         void SendSubscription(OnSubArgs e);
 
-        //void SendBits(OnBitsArgs e);
+        void SendBits(OnBitsArgs e);
     }
 }
