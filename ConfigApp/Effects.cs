@@ -311,6 +311,8 @@ namespace ConfigApp
             EFFECT_PEDS_SPAWN_BIKER,
             EFFECT_PEDS_SPAWN_SPACE_RANGER,
             EFFECT_PLAYER_KILLS_NEAREST_PED,
+            EFFECT_SPAWN_COMPANION_WOLF_CULT,
+            EFFECT_COUGAR_RAIN,
             _EFFECT_ENUM_MAX
         }
 
@@ -585,7 +587,9 @@ namespace ConfigApp
             {EffectType.EFFECT_PLAYER_AIMBOT, new EffectInfo("Aimbot", EffectCategory.PLAYER, "player_aimbot", true)},
             {EffectType.EFFECT_PEDS_SPAWN_BIKER, new EffectInfo("Spawn Biker", EffectCategory.PEDS, "peds_spawn_biker")},
             {EffectType.EFFECT_PEDS_SPAWN_SPACE_RANGER, new EffectInfo("Spawn Space Ranger", EffectCategory.PEDS, "peds_spawn_space_ranger")},
-            {EffectType.EFFECT_PLAYER_KILLS_NEAREST_PED, new EffectInfo("Kill Nearest Ped", EffectCategory.PLAYER, "player_kill_nearest_ped", true)}
+            {EffectType.EFFECT_PLAYER_KILLS_NEAREST_PED, new EffectInfo("Kill Nearest Ped", EffectCategory.PLAYER, "player_kill_nearest_ped", true)},
+            {EffectType.EFFECT_SPAWN_COMPANION_WOLF_CULT, new EffectInfo("Not A Cult", EffectCategory.PEDS, "spawn_companion_wolf_cult")},
+            {EffectType.EFFECT_PLAYER_KILLS_NEAREST_PED, new EffectInfo("Cougar Rain", EffectCategory.MISC, "world_cougarrain", true)}
         };
     }
 }

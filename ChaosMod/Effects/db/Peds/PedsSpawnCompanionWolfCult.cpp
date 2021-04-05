@@ -40,7 +40,7 @@ static void OnStart()
 
 static RegisterEffect registerEffect(EFFECT_SPAWN_COMPANION_WOLF_CULT, OnStart, EffectInfo
 	{
-		.Name = "It's Not A Cult",
+		.Name = "Not A Cult",
 		.Id = "spawn_companion_wolf_cult",
 		.EffectGroupType = EffectGroupType::SPAWN_COMPANION
 	}

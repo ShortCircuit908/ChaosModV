@@ -14,8 +14,6 @@
 
 #include "Effects/MetaEffectInfo.h"
 
-#include "Effects/BitCacheHash.h"
-
 enum class TwitchOverlayMode;
 
 class EffectDispatcher
