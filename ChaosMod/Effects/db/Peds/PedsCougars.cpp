@@ -1,33 +1,26 @@
 #include <stdafx.h>
 
+
 static void OnTick()
 {
 	static const Hash COUGAR_MODEL = GET_HASH_KEY("a_c_mtlion");
-	bool loaded = false;
-
+	int done = 0;
 	for (Ped ped : GetAllPeds())
 	{
 		Ped pedType = GET_PED_TYPE(ped);
 
 		if (!IS_PED_A_PLAYER(ped) && pedType != 0 && pedType != 1 && pedType != 2 && pedType != 28 && !IS_ENTITY_A_MISSION_ENTITY(ped))
 		{
-			if (!loaded)
-			{
-				LoadModel(COUGAR_MODEL);
-				loaded = true;
-			}
 			Vector3 pos = GET_ENTITY_COORDS(ped, false);
-			float heading = GET_ENTITY_HEADING(ped);
-			Ped cougar = CREATE_PED(28, COUGAR_MODEL, pos.x, pos.y, pos.z, heading, true, false);
+			Ped cougar = CreatePoolPed(28, COUGAR_MODEL, pos.x, pos.y, pos.z, GET_ENTITY_HEADING(ped));
 			SET_ENTITY_COORDS(ped, 0, 0, 0, 1, 0, 0, 1);
 			SET_PED_AS_NO_LONGER_NEEDED(&ped);
 			DELETE_PED(&ped);
-		}
-	}
 
-	if (loaded)
-	{
-		SET_MODEL_AS_NO_LONGER_NEEDED(COUGAR_MODEL);
+			if (++done > 10) {
+				break;
+			}
+		}
 	}
 }
 

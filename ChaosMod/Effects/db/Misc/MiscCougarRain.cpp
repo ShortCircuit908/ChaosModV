@@ -6,6 +6,7 @@ static void OnTick()
 	static const Hash COUGAR_MODEL = GET_HASH_KEY("a_c_mtlion");
 
 	static Ped cougars[MAX_COUGARS] = {};
+	static int cougarDespawnTime[MAX_COUGARS];
 	static int cougarAmount = 0;
 
 	Vector3 playerPos = GET_ENTITY_COORDS(PLAYER_PED_ID(), false);
@@ -20,7 +21,7 @@ static void OnTick()
 		Vector3 spawnPos = Vector3::Init(
 			playerPos.x + g_random.GetRandomInt(-100, 100),
 			playerPos.y + g_random.GetRandomInt(-100, 100),
-			playerPos.z + g_random.GetRandomInt(5, 10)
+			playerPos.z + g_random.GetRandomInt(25, 50)
 		);
 
 		LoadModel(COUGAR_MODEL);
@@ -34,11 +35,14 @@ static void OnTick()
 			if (!ped)
 			{
 				ped = cougar;
+				cougarDespawnTime[i] = 5;
 				break;
 			}
 		}
 
 		SET_ENTITY_INVINCIBLE(cougar, true);
+
+		APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(cougar, 0, 35.f, 0, -5000.f, true, false, true, true);
 
 		SET_MODEL_AS_NO_LONGER_NEEDED(COUGAR_MODEL);
 	}
@@ -49,15 +53,22 @@ static void OnTick()
 		Ped& cougar = cougars[i];
 		if (cougar)
 		{
-			if (DOES_ENTITY_EXIST(cougar) && !IS_PED_DEAD_OR_DYING(cougar, true))
+			if (DOES_ENTITY_EXIST(cougar) && cougarDespawnTime[i] > 0)
 			{
-				if (HAS_ENTITY_COLLIDED_WITH_ANYTHING(cougar)) {
-					SET_ENTITY_INVINCIBLE(cougar, false);
+				Vector3 propPos = GET_ENTITY_COORDS(cougar, false);
+				if (GET_DISTANCE_BETWEEN_COORDS(playerPos.x, playerPos.y, playerPos.z, propPos.x, propPos.y, propPos.z, true) < 400.f)
+				{
+					if (HAS_ENTITY_COLLIDED_WITH_ANYTHING(cougar))
+					{
+						SET_ENTITY_INVINCIBLE(cougar, false);
+
+						if (lastTick2 < curTick - 1000)
+						{
+							cougarDespawnTime[i]--;
+						}
+					}
+					continue;
 				}
-				continue;
-			}
-			else {
-				cougars[i] = 0;
 			}
 
 			cougarAmount--;
