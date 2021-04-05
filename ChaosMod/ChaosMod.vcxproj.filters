@@ -225,6 +225,7 @@
     <ClCompile Include="Util\PoolSpawner.cpp" />
     <ClCompile Include="Effects\db\Peds\PedsSpawnCompanionWolfCult.cpp" />
     <ClCompile Include="Effects\db\Misc\MiscCougarRain.cpp" />
+    <ClCompile Include="Effects\db\Peds\PedsCougars.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h" />

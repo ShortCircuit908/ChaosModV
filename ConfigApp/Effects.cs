@@ -313,6 +313,7 @@ namespace ConfigApp
             EFFECT_PLAYER_KILLS_NEAREST_PED,
             EFFECT_SPAWN_COMPANION_WOLF_CULT,
             EFFECT_COUGAR_RAIN,
+            EFFECT_PEDS_COUGARS,
             _EFFECT_ENUM_MAX
         }
 
@@ -589,7 +590,8 @@ namespace ConfigApp
             {EffectType.EFFECT_PEDS_SPAWN_SPACE_RANGER, new EffectInfo("Spawn Space Ranger", EffectCategory.PEDS, "peds_spawn_space_ranger")},
             {EffectType.EFFECT_PLAYER_KILLS_NEAREST_PED, new EffectInfo("Kill Nearest Ped", EffectCategory.PLAYER, "player_kill_nearest_ped", true)},
             {EffectType.EFFECT_SPAWN_COMPANION_WOLF_CULT, new EffectInfo("Not A Cult", EffectCategory.PEDS, "spawn_companion_wolf_cult")},
-            {EffectType.EFFECT_PLAYER_KILLS_NEAREST_PED, new EffectInfo("Cougar Rain", EffectCategory.MISC, "world_cougarrain", true)}
+            {EffectType.EFFECT_PLAYER_KILLS_NEAREST_PED, new EffectInfo("Cougar Rain", EffectCategory.MISC, "world_cougarrain", true)},
+            {EffectType.EFFECT_PEDS_COUGARS, new EffectInfo("Single Cougars In Your Area", EffectCategory.PEDS, "peds_cougars", true)}
         };
     }
 }
