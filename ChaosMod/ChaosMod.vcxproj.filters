@@ -226,6 +226,9 @@
     <ClCompile Include="Effects\db\Peds\PedsSpawnCompanionWolfCult.cpp" />
     <ClCompile Include="Effects\db\Misc\MiscCougarRain.cpp" />
     <ClCompile Include="Effects\db\Peds\PedsCougars.cpp" />
+    <ClCompile Include="Effects\db\Misc\MiscLowPitch.cpp" />
+    <ClCompile Include="Effects\db\Peds\PedsHandsUp.cpp" />
+    <ClCompile Include="Effects\db\Misc\MiscTrainRain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMenu.h" />

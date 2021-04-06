@@ -1,7 +1,23 @@
 #include <stdafx.h>
 
+static void OnStart()
+{
+	Hash groupHash;
+	ADD_RELATIONSHIP_GROUP("_COUGAR_ATTACK_PLAYER", &groupHash);
+}
+
 static void OnTick()
 {
+	static const Hash enemyGroupHash = GET_HASH_KEY("_ATTACK_PLAYER");
+	static const Hash playerGroupHash = GET_HASH_KEY("PLAYER");
+
+	SET_RELATIONSHIP_BETWEEN_GROUPS(5, enemyGroupHash, playerGroupHash);
+	SET_RELATIONSHIP_BETWEEN_GROUPS(5, playerGroupHash, enemyGroupHash);
+
+	Player player = PLAYER_ID();
+	Ped playerPed = PLAYER_PED_ID();
+	int playerGroup = GET_PLAYER_GROUP(player);
+
 	static constexpr int MAX_COUGARS = 20;
 	static const Hash COUGAR_MODEL = GET_HASH_KEY("a_c_mtlion");
 
@@ -55,6 +71,20 @@ static void OnTick()
 		{
 			if (DOES_ENTITY_EXIST(cougar) && cougarDespawnTime[i] > 0)
 			{
+				if (IS_PED_IN_GROUP(cougar) && GET_PED_GROUP_INDEX(cougar) == playerGroup)
+				{
+					REMOVE_PED_FROM_GROUP(cougar);
+				}
+
+				SET_PED_RELATIONSHIP_GROUP_HASH(cougar, enemyGroupHash);
+
+				SET_PED_COMBAT_ATTRIBUTES(cougar, 5, true);
+				SET_PED_COMBAT_ATTRIBUTES(cougar, 46, true);
+
+				SET_PED_FLEE_ATTRIBUTES(cougar, 2, true);
+
+				TASK_COMBAT_PED(cougar, playerPed, 0, 16);
+
 				Vector3 propPos = GET_ENTITY_COORDS(cougar, false);
 				if (GET_DISTANCE_BETWEEN_COORDS(playerPos.x, playerPos.y, playerPos.z, propPos.x, propPos.y, propPos.z, true) < 400.f)
 				{
@@ -85,7 +115,7 @@ static void OnTick()
 	}
 }
 
-static RegisterEffect registerEffect(EFFECT_COUGAR_RAIN, nullptr, nullptr, OnTick, EffectInfo
+static RegisterEffect registerEffect(EFFECT_COUGAR_RAIN, OnStart, nullptr, OnTick, EffectInfo
 	{
 		.Name = "Cougar Rain",
 		.Id = "world_cougarrain",
