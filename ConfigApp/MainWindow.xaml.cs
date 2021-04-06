@@ -178,7 +178,7 @@ namespace ConfigApp
             m_bitsFile.ReadFile();
 
             bits_cumulative.IsChecked = m_bitsFile.ReadValueBool("EnableCumulativeBits", false);
-            bits_random_event_enabled.IsChecked = m_bitsFile.ReadValueBool("EnableBitEvents", false);
+            bits_random_event_enabled.IsChecked = m_bitsFile.ReadValueBool("EnableBitsEvents", false);
             bits_random_event_trigger_quantity.Text = m_configFile.ReadValue("RandomEventTriggerAmount", "500");
         }
 

@@ -394,6 +394,7 @@ void Main::Loop()
 		{
 			g_effectDispatcher->DrawEffectTexts();
 		}
+		g_effectDispatcher->DrawBitsPool();
 
 		lastTick = curTick;
 	}

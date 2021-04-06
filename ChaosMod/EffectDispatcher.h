@@ -25,6 +25,7 @@ public:
 public:
 	void AddBits(int bits);
 	float FakeTimerBarPercentage = 0.f;
+	void DrawBitsPool();
 	void DrawTimerBar();
 	void DrawEffectTexts();
 	void UpdateTimer();

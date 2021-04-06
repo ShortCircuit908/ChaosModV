@@ -34,6 +34,29 @@ EffectDispatcher::~EffectDispatcher()
 	ClearEffects();
 }
 
+void EffectDispatcher::DrawBitsPool()
+{
+	if (!m_bitEventsEnabled)
+	{
+		return;
+	}
+	float x = 0.0f;
+	float y = 0.03f;
+	if (m_bitsCumulative)
+	{
+		DrawScreenText("Current bits: " + std::to_string(m_cumulativeBits), 
+			{ x, y }, .47f, { m_textColor[0], m_textColor[1], m_textColor[2] }, true, ScreenTextAdjust::LEFT);
+		y += 0.0275f;
+		DrawScreenText("Bits until next effect: " + std::to_string(m_bitRandomEventAmount - m_cumulativeBits), 
+			{ x, y }, .47f, { m_textColor[0], m_textColor[1], m_textColor[2] }, true, ScreenTextAdjust::LEFT);
+	}
+	else {
+		//y += 0.0275f;
+		DrawScreenText(std::to_string(m_cumulativeBits) + " bits per effect",
+			{ x, y }, .47f, { m_textColor[0], m_textColor[1], m_textColor[2] }, true, ScreenTextAdjust::LEFT);
+	}
+}
+
 void EffectDispatcher::DrawTimerBar()
 {
 	if (!m_enableNormalEffectDispatch)
@@ -526,7 +549,6 @@ void EffectDispatcher::AddBits(int bits) {
 	// Find and dispatch an explicitly defined effect first
 	bool dispatchedSpecificEffect = false;
 
-	/*
 	for (std::unordered_map<EffectIdentifier, int>::iterator it = m_bitEventAmounts.begin(); it != m_bitEventAmounts.end(); ++it)
 	{
 		int requiredBits = it->second;
@@ -535,7 +557,7 @@ void EffectDispatcher::AddBits(int bits) {
 			DispatchEffect(it->first);
 			dispatchedSpecificEffect = true;
 		}
-	}*/
+	}
 
 	if (dispatchedSpecificEffect)
 	{
@@ -544,18 +566,17 @@ void EffectDispatcher::AddBits(int bits) {
 
 	// If no specific effect was triggered, attempt to trigger a random effect with bits
 
+	int* bitsPool = &bits;
+
 	if (m_bitsCumulative) {
-		m_cumulativeBits += bits;
-		bits = m_cumulativeBits;
+		bitsPool = &m_cumulativeBits;
+		*bitsPool += bits;
 	}
 
 	// Apply an effect until there are not enough bits
-	while (bits >= m_bitRandomEventAmount)
+	while (*bitsPool >= m_bitRandomEventAmount)
 	{
 		DispatchRandomEffect();
-		bits -= m_bitRandomEventAmount;
-		if (m_bitsCumulative) {
-			m_cumulativeBits -= m_bitRandomEventAmount;
-		}
+		*bitsPool -= m_bitRandomEventAmount;
 	}
 }
