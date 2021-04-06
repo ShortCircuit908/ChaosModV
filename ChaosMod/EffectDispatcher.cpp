@@ -501,6 +501,23 @@ void EffectDispatcher::ClearMostRecentEffect()
 	}
 }
 
+void EffectDispatcher::ClearEffect(const EffectIdentifier& toClear)
+{
+	if (!m_activeEffects.empty())
+	{
+		auto it = m_activeEffects.begin();
+		while (it != m_activeEffects.end())
+		{
+			if (it->EffectIdentifier == toClear && it->Timer > 0)
+			{
+				ThreadManager::StopThread(it->ThreadId);
+
+				it = m_activeEffects.erase(it);
+			}
+		}
+	}
+}
+
 void EffectDispatcher::Reset()
 {
 	ClearEffects();

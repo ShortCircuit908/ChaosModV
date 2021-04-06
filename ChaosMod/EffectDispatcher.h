@@ -45,6 +45,7 @@ public:
 	void ClearEffects(bool includePermanent = true);
 	void ClearActiveEffects(EffectIdentifier exclude = EffectIdentifier());
 	void ClearMostRecentEffect();
+	void ClearEffect(const EffectIdentifier& toClear);
 	void Reset();
 	void ResetTimer();
 

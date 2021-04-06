@@ -11,6 +11,7 @@ static void OnTick()
 	if (hasKilled) {
 		return;
 	}
+
 	Ped playerPed = PLAYER_PED_ID();
 	if (IS_PED_WEAPON_READY_TO_SHOOT(playerPed))
 	{
