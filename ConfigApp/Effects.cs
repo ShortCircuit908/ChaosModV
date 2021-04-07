@@ -317,6 +317,7 @@ namespace ConfigApp
             EFFECT_COUGAR_RAIN,
             EFFECT_PEDS_COUGARS,
             EFFECT_MISC_TRAIN_RAIN,
+            EFFECT_MISC_TRAINSAW_LASER,
             _EFFECT_ENUM_MAX
         }
 
@@ -598,6 +599,7 @@ namespace ConfigApp
             {EffectType.EFFECT_COUGAR_RAIN, new EffectInfo("Cougar Rain", EffectCategory.MISC, "world_cougarrain", true)},
             {EffectType.EFFECT_PEDS_COUGARS, new EffectInfo("Single Cougars In Your Area", EffectCategory.PEDS, "peds_cougars", true)},
             {EffectType.EFFECT_MISC_TRAIN_RAIN, new EffectInfo("Train Rain", EffectCategory.MISC, "misc_train_rain", true, true)},
+            {EffectType.EFFECT_MISC_TRAINSAW_LASER, new EffectInfo("Trainsaw Laser", EffectCategory.MISC, "misc_trainsaw_laser", true, true)},
         };
     }
 }

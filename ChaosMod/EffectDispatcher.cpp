@@ -52,7 +52,7 @@ void EffectDispatcher::DrawBitsPool()
 	}
 	else {
 		//y += 0.0275f;
-		DrawScreenText(std::to_string(m_cumulativeBits) + " bits per effect",
+		DrawScreenText(std::to_string(m_bitRandomEventAmount) + " bits per effect",
 			{ x, y }, .47f, { m_textColor[0], m_textColor[1], m_textColor[2] }, true, ScreenTextAdjust::LEFT);
 	}
 }

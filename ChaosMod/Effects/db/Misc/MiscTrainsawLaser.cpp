@@ -5,7 +5,7 @@
 static void OnTick()
 {
 	static constexpr int MAX_TRAINS = 20;
-	
+
 	static Vehicle trains[MAX_TRAINS];
 	static int trainDespawnTime[MAX_TRAINS];
 	static int trainAmount = 0;
@@ -15,21 +15,24 @@ static void OnTick()
 	static DWORD64 lastTick = 0;
 	DWORD64 curTick = GET_GAME_TIMER();
 
-	if (trainAmount < MAX_TRAINS && curTick > lastTick + 500)
+	if (trainAmount < MAX_TRAINS && curTick > lastTick + 2000)
 	{
 		lastTick = curTick;
 
 		Vector3 spawnPos;
-		spawnPos.x = playerPos.x + g_random.GetRandomInt(-100, 100);
-		spawnPos.y = playerPos.y + g_random.GetRandomInt(-100, 100);
-		spawnPos.z = playerPos.z + g_random.GetRandomInt(25, 50);
+		spawnPos.x = playerPos.x;
+		spawnPos.y = playerPos.y;
+		spawnPos.z = playerPos.z + 50;
 
 
-		static std::vector<Hash> vehModels = { GET_HASH_KEY("FREIGHT"), GET_HASH_KEY("FREIGHTCAR"), GET_HASH_KEY("FREIGHTCONT1"), GET_HASH_KEY("FREIGHTCONT2"), GET_HASH_KEY("FREIGHTGRAIN"), GET_HASH_KEY("TANKERCAR"), GET_HASH_KEY("METROTRAIN") };
+		static std::vector<Hash> vehModels = { GET_HASH_KEY("FREIGHT") };
 
-		Vehicle veh = CreateTempVehicle(vehModels[g_random.GetRandomInt(0, vehModels.size() - 1)], spawnPos.x, spawnPos.y, spawnPos.z, g_random.GetRandomInt(0, 359));
+		Vehicle veh = CreateTempVehicle(vehModels[g_random.GetRandomInt(0, vehModels.size() - 1)], spawnPos.x, spawnPos.y, spawnPos.z, 0);
 
-		APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(veh, 0, g_random.GetRandomInt(-5, 5), g_random.GetRandomInt(-5, 5), -500, true, false, true, true);
+		SET_ENTITY_ROTATION(veh, -90, GET_ENTITY_HEADING(PLAYER_PED_ID()), 0, 1, true);
+		
+
+		APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(veh, 0, 0, 0, -10000, true, false, true, true);
 
 		trainAmount++;
 
@@ -82,10 +85,10 @@ static void OnTick()
 	}
 }
 
-static RegisterEffect registerEffect(EFFECT_MISC_TRAIN_RAIN, nullptr, nullptr, OnTick, EffectInfo
+static RegisterEffect registerEffect(EFFECT_MISC_TRAINSAW_LASER, nullptr, nullptr, OnTick, EffectInfo
 	{
-		.Name = "Train Rain",
-		.Id = "misc_train_rain",
+		.Name = "Trainsaw Laser",
+		.Id = "misc_trainsaw_laser",
 		.IsTimed = true,
 		.IsShortDuration = true
 	}

@@ -83,6 +83,10 @@ static void OnTick()
 
 				SET_PED_FLEE_ATTRIBUTES(cougar, 2, true);
 
+				CLEAR_PED_TASKS_IMMEDIATELY(cougar);
+
+				SET_PED_TO_RAGDOLL(cougar, 100, 100, 2, true, true, false);
+
 				TASK_COMBAT_PED(cougar, playerPed, 0, 16);
 
 				Vector3 propPos = GET_ENTITY_COORDS(cougar, false);

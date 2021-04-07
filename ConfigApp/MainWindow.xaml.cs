@@ -179,7 +179,7 @@ namespace ConfigApp
 
             bits_cumulative.IsChecked = m_bitsFile.ReadValueBool("EnableCumulativeBits", false);
             bits_random_event_enabled.IsChecked = m_bitsFile.ReadValueBool("EnableBitsEvents", false);
-            bits_random_event_trigger_quantity.Text = m_configFile.ReadValue("RandomEventTriggerAmount", "500");
+            bits_random_event_trigger_quantity.Text = m_bitsFile.ReadValue("RandomEventTriggerAmount", "500");
         }
 
         private void WriteConfigFile()
@@ -210,7 +210,7 @@ namespace ConfigApp
         {
             m_bitsFile.WriteValue("EnableCumulativeBits", bits_cumulative.IsChecked.Value);
             m_bitsFile.WriteValue("EnableBitsEvents", bits_random_event_enabled.IsChecked.Value);
-            m_bitsFile.WriteValue("RandomEventTriggerAmount", "500");
+            m_bitsFile.WriteValue("RandomEventTriggerAmount", bits_random_event_trigger_quantity.Text);
 
             m_bitsFile.WriteFile();
         }
