@@ -3,6 +3,8 @@ using System;
 using System.Threading.Tasks;
 using TwitchChatVotingProxy.BitsReceiver;
 using TwitchChatVotingProxy.SubReceiver;
+using TwitchLib.Api;
+using TwitchLib.Api.V5.Models.Channels;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -34,8 +36,6 @@ namespace TwitchChatVotingProxy.VotingReceiver
         {
             this.config = config;
 
-            clientPubSub.Connect();
-
             // Connect to twitch
             logger.Information(
                 $"trying to connect to channel \"{config.ChannelName}\" with user \"{config.UserName}\""
@@ -46,6 +46,7 @@ namespace TwitchChatVotingProxy.VotingReceiver
                 new ConnectionCredentials(config.UserName, config.OAuth),
                 config.ChannelName
             );
+            
             client.OnReSubscriber += OnReSubscribed;
             client.OnNewSubscriber += OnNewSubscribed;
             client.OnGiftedSubscription += OnGiftedSubscription;
@@ -58,9 +59,23 @@ namespace TwitchChatVotingProxy.VotingReceiver
             client.OnMessageReceived += OnMessageReceived;
 
             client.Connect();
+            clientPubSub = new TwitchPubSub();
 
             clientPubSub.OnPubSubServiceConnected += onPubSubServiceConnected;
             clientPubSub.OnBitsReceived += onBitsReceived;
+            
+            //Task.Run(() => this.SetupPubSub());
+        }
+
+        private async void SetupPubSub()
+        {
+            TwitchAPI api = new TwitchAPI();
+            api.Settings.ClientId = config.UserName;
+            api.Settings.AccessToken = config.OAuth;
+            ChannelAuthed channel = await api.V5.Channels.GetChannelAsync();
+            clientPubSub.ListenToBitsEvents(channel.Id);
+            clientPubSub.Connect();
+            logger.Information($"listening for bits in twitch channel \"{config.ChannelName}\"");
         }
 
         public void SendMessage(string message)
@@ -111,8 +126,6 @@ namespace TwitchChatVotingProxy.VotingReceiver
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             logger.Information($"successfully joined twitch channel \"{config.ChannelName}\"");
-            clientPubSub.ListenToBitsEvents(e.Channel);
-            logger.Information($"listening for bits in twitch channel \"{config.ChannelName}\"");
         }
         /// <summary>
         /// Called when the twitch client receives a message
