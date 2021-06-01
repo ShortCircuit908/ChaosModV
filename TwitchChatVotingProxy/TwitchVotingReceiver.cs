@@ -5,6 +5,7 @@ using TwitchChatVotingProxy.BitsReceiver;
 using TwitchChatVotingProxy.SubReceiver;
 using TwitchLib.Api;
 using TwitchLib.Api.V5.Models.Channels;
+using TwitchLib.Api.V5.Models.Users;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -72,8 +73,13 @@ namespace TwitchChatVotingProxy.VotingReceiver
             TwitchAPI api = new TwitchAPI();
             api.Settings.ClientId = config.UserName;
             api.Settings.AccessToken = config.OAuth;
-            ChannelAuthed channel = await api.V5.Channels.GetChannelAsync();
-            clientPubSub.ListenToBitsEvents(channel.Id);
+            Users users = await api.V5.Users.GetUserByNameAsync(config.ChannelName);
+            if(users.Total == 0)
+            {
+                logger.Warning($"No user object was returned for channel name \"{config.ChannelName}\"");
+                return;
+            }
+            clientPubSub.ListenToBitsEvents(users.Matches[0].Id);
             clientPubSub.Connect();
             logger.Information($"listening for bits in twitch channel \"{config.ChannelName}\"");
         }
